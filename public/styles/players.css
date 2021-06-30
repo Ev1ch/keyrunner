@@ -1,0 +1,31 @@
+#players {
+  width: 30%;
+  flex-direction: column;
+  gap: var(--gutter);
+}
+
+.player {
+  padding: 10px;
+  border: 1px solid var(--main-button-border-color);
+}
+
+.player__progress-bar {
+  width: 100%;
+}
+
+.player__status {
+  margin-left: 10px;
+  vertical-align: middle;
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.ready-status-red {
+  background: red;
+}
+
+.ready-status-green {
+  background: green;
+}
