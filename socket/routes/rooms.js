@@ -25,10 +25,18 @@ const joinRoom = (username, roomname) => {
 
 const leftRoom = (username, roomname) => {
   const roomIndex = rooms.findIndex((room) => room.name == roomname);
-  const userInder = rooms[roomIndex].members.findIndex(
+  const userIndex = rooms[roomIndex].members.findIndex(
     (user) => user.name == username,
   );
-  rooms[roomIndex].members.splice(userInder, 1);
+  rooms[roomIndex].members.splice(userIndex, 1);
+};
+
+const setUserStatus = (username, roomname, status) => {
+  const roomIndex = rooms.findIndex((room) => room.name == roomname);
+  const userIndex = rooms[roomIndex].members.findIndex(
+    (user) => user.name == username,
+  );
+  rooms[roomIndex].members[userIndex].status = status;
 };
 
 const getRoom = (roomname) => rooms.find((room) => room.name == roomname);
@@ -48,7 +56,6 @@ export default (io) => {
         joinRoom(username, roomname);
         socket.join(roomname);
         joinedRoomName = roomname;
-
         socket.emit('JOINED_ROOM', getRoom(roomname));
         io.emit('UPDATE_ROOMS', getAvailableRooms());
       }
@@ -69,6 +76,16 @@ export default (io) => {
 
       io.to(joinedRoomName).emit('UPDATE_ROOM', getRoom(joinedRoomName));
       io.emit('UPDATE_ROOMS', getAvailableRooms());
+    });
+
+    socket.on('NOT_READY', () => {
+      setUserStatus(username, joinedRoomName, 0);
+      io.to(joinedRoomName).emit('UPDATE_ROOM', getRoom(joinedRoomName));
+    });
+
+    socket.on('READY', () => {
+      setUserStatus(username, joinedRoomName, 1);
+      io.to(joinedRoomName).emit('UPDATE_ROOM', getRoom(joinedRoomName));
     });
 
     socket.on('disconnect', () => {
