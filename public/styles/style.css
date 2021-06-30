@@ -3,3 +3,7 @@
 @import url('./login.css');
 @import url('./rooms.css');
 @import url('./players.css');
+@import url('./game-field.css');
+@import url('./text-container.css');
+@import url('./control-panel.css');
+@import url('./modal.css');

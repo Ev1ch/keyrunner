@@ -23,9 +23,19 @@
       <div id="game-page" class="full-screen display-none">
         <h1>Game Page</h1>
         <button id="quit-room-btn">Back to rooms</button>
-        <div id="players" class="flex">
+        <div id="game-field" class="flex">
+          <div id="players" class="flex">
+          </div>
+          <div id="text-container" class="display-none">
+            <span id="printed-text"></span>
+            <span id="next-char"></span>
+            <span id="not-printed-text"></span>
+          </div>
+          <div id="control-panel">
+            <button id="ready-btn">Ready</button>
+            <span id="timer"></span>
+          </div>
         </div>
-        <button id="ready-btn">Ready</button>
       </div>
     </div>
   </body>

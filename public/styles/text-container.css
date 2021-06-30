@@ -1,0 +1,11 @@
+#text-container {
+  width: 70%;
+}
+
+#printed-text {
+  background: greenyellow;
+}
+
+#next-char {
+  text-decoration: underline;
+}
