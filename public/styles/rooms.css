@@ -1,0 +1,21 @@
+#rooms {
+  gap: var(--gutter);
+  flex-wrap: wrap;
+}
+
+.room {
+  border: 1px solid var(--main-button-border-color);
+  padding: 10px;
+  width: 200px;
+  height: 150px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.room__join-button {
+  padding: 5px 15px;
+  border: 1px solid var(--main-button-border-color);
+  background-color: var(--main-button-background-color);
+}
