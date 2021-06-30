@@ -21,7 +21,7 @@ loginSocket.on('USER_EXISTS', () => {
 });
 
 const roomsSocket = io('/rooms', credentials);
-const addRoomButton = document.getElementById('add-room-button');
+const addRoomButton = document.getElementById('add-room-btn');
 
 const addRoomHandler = () => {
   const roomName = prompt('Enter room name:');

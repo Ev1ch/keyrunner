@@ -14,7 +14,7 @@ const roomTemplate = (room) => {
   });
 
   const joinButton = createBlock('button', {
-    class: ['room__join-button'],
+    class: ['room__join-button', 'join-btn'],
     text: 'Join room',
   });
 
