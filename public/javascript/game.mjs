@@ -1,7 +1,13 @@
-const username = sessionStorage.getItem("username");
+const username = sessionStorage.getItem('username');
 
 if (!username) {
-  window.location.replace("/login");
+  window.location.replace('/login');
 }
 
-const socket = io("", { query: { username } });
+const loginSocket = io('/login', { query: { username } });
+
+loginSocket.on('USER_EXISTS', () => {
+  alert('User with such a name already exists');
+  sessionStorage.removeItem('username');
+  window.location.replace('/login');
+});

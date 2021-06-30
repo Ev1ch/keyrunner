@@ -1,6 +1,6 @@
 const users = [];
 
-const existsUser = (username) => users.find((user) => user.name === username);
+const existsUser = (username) => users.find((user) => user.name == username);
 
 const addUser = (username) =>
   users.push({
@@ -9,7 +9,7 @@ const addUser = (username) =>
 
 const removeUser = (username) =>
   users.splice(
-    users.findIndex((user) => user.name === username),
+    users.findIndex((user) => user.name == username),
     1,
   );
 
