@@ -9,6 +9,13 @@ import {
   addPlayer,
   hideGamePage,
   showGamePage,
+  setText,
+  setNextChar,
+  setPrintedText,
+  setNotPrintedText,
+  setTimer,
+  clearText,
+  showModal,
 } from './helpers/dom/game.mjs';
 import { showBlock, hideBlock } from './helpers/dom/dom.mjs';
 
@@ -111,3 +118,78 @@ const readyHandler = (event) => {
 };
 
 readyButton.addEventListener('click', readyHandler);
+
+const getText = async (textId) =>
+  (await fetch(textsRoute + textId).then((response) => response.json())).text;
+
+const textsRoute = `${window.location.href}/texts/`;
+
+const timerBlock = document.getElementById('timer');
+
+const textBlock = document.getElementById('text-container');
+
+let text;
+
+roomsSocket.on('START_TIMER', async (textId) => {
+  text = await getText(textId);
+  hideBlock(readyButton);
+  showBlock(timerBlock);
+});
+
+roomsSocket.on('UPDATE_TIMER', (seconds) => {
+  setTimer(seconds);
+});
+
+roomsSocket.on('START_GAME', () => {
+  setText(text);
+  showBlock(textBlock);
+  startGame(text);
+});
+
+const startGame = (text) => {
+  let textToPrint = text;
+  const textLength = textToPrint.length;
+  let printedText = '';
+  let notPrintedText = text;
+  let currentPosition = 0;
+  let progress = 0;
+
+  const keyUpHandler = (event) => {
+    const char = event.key;
+
+    if (char == textToPrint[currentPosition]) {
+      currentPosition++;
+      printedText += char;
+      notPrintedText = textToPrint.substr(currentPosition + 1);
+      setNextChar(
+        currentPosition != textLength ? textToPrint[currentPosition] : '',
+      );
+      setPrintedText(printedText);
+      setNotPrintedText(notPrintedText);
+
+      progress = Math.round((currentPosition / textLength) * 100);
+
+      roomsSocket.emit('UPDATE_PROGRESS', progress);
+
+      if (progress == 100) {
+        const progressBar = document.removeEventListener(
+          'keypress',
+          keyUpHandler,
+        );
+      }
+    }
+  };
+
+  document.addEventListener('keypress', keyUpHandler);
+};
+
+roomsSocket.on('END_GAME', (winners) => {
+  showModal(winners);
+  showBlock(readyButton);
+  showBlock(leftRoomButton);
+  hideBlock(textBlock);
+  clearText();
+  hideBlock(timerBlock);
+  playerStatus = 0;
+  readyButton.innerText = 'Ready';
+});

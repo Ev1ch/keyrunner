@@ -20,10 +20,15 @@ const playerTemplate = (user, isYou) => {
   });
 
   const progressBar = createBlock('progress', {
-    class: ['player__progress-bar', 'user-progress', user.name],
+    class: [
+      'player__progress-bar',
+      'user-progress',
+      user.name,
+      user.progress == 100 ? 'finished' : 'not-finished',
+    ],
     attributes: {
       max: 100,
-      value: 0,
+      value: user.progress,
     },
   });
 
@@ -54,4 +59,63 @@ export const addPlayer = (user, isYou) => {
 export const clearPlayers = () => {
   const playersBlock = document.getElementById('players');
   playersBlock.innerHTML = '';
+};
+
+export const setText = (text) => {
+  const textInput = document.getElementById('not-printed-text');
+  textInput.innerText = text;
+};
+
+export const clearText = () => {
+  document.getElementById('printed-text').innerText = '';
+  document.getElementById('next-char').innerText = '';
+  document.getElementById('not-printed-text').innerText = '';
+};
+
+export const setNotPrintedText = (text) => {
+  const textInput = document.getElementById('not-printed-text');
+  textInput.innerText = text;
+};
+
+export const setNextChar = (char) => {
+  const textInput = document.getElementById('next-char');
+  textInput.innerText = char;
+};
+
+export const setPrintedText = (text) => {
+  const textInput = document.getElementById('printed-text');
+  textInput.innerText = text;
+};
+
+export const setTimer = (seconds) => {
+  const timerBlock = document.getElementById('timer');
+  timerBlock.innerText = seconds;
+};
+
+export const showModal = (winners) => {
+  const modalBlock = createBlock('div', { id: 'modal' });
+  const modalContentBlock = createBlock('div', {
+    id: 'modal-content',
+  });
+
+  const modalCloseBlock = createBlock('button', {
+    id: 'quit-results-btn',
+    text: 'x',
+  });
+
+  modalContentBlock.appendChild(modalCloseBlock);
+
+  winners.forEach((winner, index) =>
+    modalContentBlock.appendChild(
+      createBlock('p', {
+        id: `place-${index + 1}`,
+        text: `#${index + 1} ${winner.name}`,
+      }),
+    ),
+  );
+
+  modalCloseBlock.addEventListener('click', () => modalBlock.remove());
+
+  modalBlock.appendChild(modalContentBlock);
+  document.body.appendChild(modalBlock);
 };

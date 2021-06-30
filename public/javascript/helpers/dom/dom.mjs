@@ -2,7 +2,7 @@ export const createBlock = (blockName, blockParams) => {
   const block = document.createElement(blockName);
 
   if (blockParams.id !== undefined) {
-    block.id = blockAttributes.id;
+    block.id = blockParams.id;
   }
 
   if (blockParams.class !== undefined) {
