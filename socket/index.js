@@ -1,8 +1,6 @@
-import * as config from "./config";
+import * as config from './config';
+import login from './routes/login';
 
-export default io => {
-  io.on("connection", socket => {
-    const username = socket.handshake.query.username;
-
-  });
+export default (io) => {
+  login(io.of('/login'));
 };
