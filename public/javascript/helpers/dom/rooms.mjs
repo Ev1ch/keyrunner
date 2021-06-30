@@ -1,5 +1,6 @@
 import { createBlock } from './dom.mjs';
 import { joinRoomHandler } from '../../game.mjs';
+import { showBlock, hideBlock } from './dom.mjs';
 
 export const clearRooms = () => {
   const roomsBlock = document.getElementById('rooms');
@@ -47,10 +48,10 @@ export const addRoom = (room) => {
 
 export const hideRoomsPage = () => {
   const roomsPageBlock = document.getElementById('rooms-page');
-  roomsPageBlock.style.display = 'none';
+  hideBlock(roomsPageBlock);
 };
 
 export const showRoomsPage = () => {
   const roomsPageBlock = document.getElementById('rooms-page');
-  roomsPageBlock.style.display = 'block';
+  showBlock(roomsPageBlock);
 };

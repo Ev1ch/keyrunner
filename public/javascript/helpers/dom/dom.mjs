@@ -1,4 +1,4 @@
-export function createBlock(blockName, blockParams) {
+export const createBlock = (blockName, blockParams) => {
   const block = document.createElement(blockName);
 
   if (blockParams.id !== undefined) {
@@ -21,4 +21,12 @@ export function createBlock(blockName, blockParams) {
   }
 
   return block;
-}
+};
+
+export const hideBlock = (block) => {
+  block.style.display = 'none';
+};
+
+export const showBlock = (block) => {
+  block.style.display = 'block';
+};

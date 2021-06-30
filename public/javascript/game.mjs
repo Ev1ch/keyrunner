@@ -10,6 +10,7 @@ import {
   hideGamePage,
   showGamePage,
 } from './helpers/dom/game.mjs';
+import { showBlock, hideBlock } from './helpers/dom/dom.mjs';
 
 const username = sessionStorage.getItem('username');
 
@@ -83,3 +84,22 @@ const leftRoomHandler = (event) => {
 };
 
 leftRoomButton.addEventListener('click', leftRoomHandler);
+
+const readyButton = document.getElementById('ready-btn');
+let playerStatus = 0;
+
+const readyHandler = (event) => {
+  if (playerStatus) {
+    event.target.innerText = 'Ready';
+    showBlock(leftRoomButton);
+    roomsSocket.emit('NOT_READY');
+    playerStatus = 0;
+  } else {
+    event.target.innerText = 'Not ready';
+    hideBlock(leftRoomButton);
+    roomsSocket.emit('READY');
+    playerStatus = 1;
+  }
+};
+
+readyButton.addEventListener('click', readyHandler);

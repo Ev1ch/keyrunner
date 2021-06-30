@@ -1,13 +1,14 @@
 import { createBlock } from './dom.mjs';
+import { hideBlock, showBlock } from './dom.mjs';
 
 export const hideGamePage = () => {
   const gamePageBlock = document.getElementById('game-page');
-  gamePageBlock.style.display = 'none';
+  hideBlock(gamePageBlock);
 };
 
 export const showGamePage = () => {
   const gamePageBlock = document.getElementById('game-page');
-  gamePageBlock.style.display = 'block';
+  showBlock(gamePageBlock);
 };
 
 const playerTemplate = (user) => {
@@ -32,7 +33,10 @@ const playerTemplate = (user) => {
   });
 
   const playerStatus = createBlock('div', {
-    class: ['player__status', 'ready-status-red'],
+    class: [
+      'player__status',
+      user.status == 1 ? 'ready-status-green' : 'ready-status-red',
+    ],
   });
 
   playerBlock.appendChild(playerName);
