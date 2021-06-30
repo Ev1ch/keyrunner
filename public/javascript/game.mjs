@@ -64,14 +64,22 @@ roomsSocket.on('JOINED_ROOM', (room) => {
   showGamePage();
   clearPlayers();
   for (const player of room.members) {
-    addPlayer(player);
+    if (player.name == username) {
+      addPlayer(player, true);
+    } else {
+      addPlayer(player, false);
+    }
   }
 });
 
 roomsSocket.on('UPDATE_ROOM', (room) => {
   clearPlayers();
   for (const player of room.members) {
-    addPlayer(player);
+    if (player.name == username) {
+      addPlayer(player, true);
+    } else {
+      addPlayer(player, false);
+    }
   }
 });
 

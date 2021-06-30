@@ -11,7 +11,7 @@ export const showGamePage = () => {
   showBlock(gamePageBlock);
 };
 
-const playerTemplate = (user) => {
+const playerTemplate = (user, isYou) => {
   const playerBlock = createBlock('div', {
     class: ['player'],
     attributes: {
@@ -29,7 +29,7 @@ const playerTemplate = (user) => {
 
   const playerName = createBlock('span', {
     class: ['player__name'],
-    text: user.name,
+    text: `${user.name} ${isYou ? '(you)' : ''}`,
   });
 
   const playerStatus = createBlock('div', {
@@ -46,9 +46,9 @@ const playerTemplate = (user) => {
   return playerBlock;
 };
 
-export const addPlayer = (user) => {
+export const addPlayer = (user, isYou) => {
   const playersBlock = document.getElementById('players');
-  playersBlock.appendChild(playerTemplate(user));
+  playersBlock.appendChild(playerTemplate(user, isYou));
 };
 
 export const clearPlayers = () => {
