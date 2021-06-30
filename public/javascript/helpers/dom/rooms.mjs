@@ -1,4 +1,5 @@
 import { createBlock } from './dom.mjs';
+import { joinRoomHandler } from '../../game.mjs';
 
 export const clearRooms = () => {
   const roomsBlock = document.getElementById('rooms');
@@ -17,6 +18,8 @@ const roomTemplate = (room) => {
     class: ['room__join-button', 'join-btn'],
     text: 'Join room',
   });
+
+  joinButton.addEventListener('click', joinRoomHandler);
 
   const roomName = createBlock('span', {
     class: ['room__name'],
@@ -40,4 +43,14 @@ const roomTemplate = (room) => {
 export const addRoom = (room) => {
   const roomsBlock = document.getElementById('rooms');
   roomsBlock.appendChild(roomTemplate(room));
+};
+
+export const hideRoomsPage = () => {
+  const roomsPageBlock = document.getElementById('rooms-page');
+  roomsPageBlock.style.display = 'none';
+};
+
+export const showRoomsPage = () => {
+  const roomsPageBlock = document.getElementById('rooms-page');
+  roomsPageBlock.style.display = 'block';
 };

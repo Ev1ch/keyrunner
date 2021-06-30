@@ -1,4 +1,15 @@
-import { clearRooms, addRoom } from './helpers/dom/rooms.mjs';
+import {
+  clearRooms,
+  addRoom,
+  hideRoomsPage,
+  showRoomsPage,
+} from './helpers/dom/rooms.mjs';
+import {
+  clearPlayers,
+  addPlayer,
+  hideGamePage,
+  showGamePage,
+} from './helpers/dom/game.mjs';
 
 const username = sessionStorage.getItem('username');
 
@@ -41,3 +52,34 @@ roomsSocket.on('UPDATE_ROOMS', (rooms) => {
 roomsSocket.on('ROOM_EXISTS', () => {
   alert('Room with such a name exists');
 });
+
+export const joinRoomHandler = (event) => {
+  const roomName = event.target.parentElement.getAttribute('data-name');
+  roomsSocket.emit('JOIN_ROOM', roomName);
+};
+
+roomsSocket.on('JOINED_ROOM', (room) => {
+  hideRoomsPage();
+  showGamePage();
+  clearPlayers();
+  for (const player of room.members) {
+    addPlayer(player);
+  }
+});
+
+roomsSocket.on('UPDATE_ROOM', (room) => {
+  clearPlayers();
+  for (const player of room.members) {
+    addPlayer(player);
+  }
+});
+
+const leftRoomButton = document.getElementById('quit-room-btn');
+
+const leftRoomHandler = (event) => {
+  hideGamePage();
+  showRoomsPage();
+  roomsSocket.emit('LEFT_ROOM');
+};
+
+leftRoomButton.addEventListener('click', leftRoomHandler);
