@@ -23,10 +23,10 @@ export const createBlock = (blockName, blockParams) => {
   return block;
 };
 
-export const hideBlock = (block) => {
+export function hideBlock(block) {
   block.style.display = 'none';
-};
+}
 
-export const showBlock = (block) => {
+export function showBlock(block) {
   block.style.display = 'block';
-};
+}
