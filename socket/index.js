@@ -1,5 +1,5 @@
-import login from './routes/login';
-import rooms from './routes/rooms';
+import login from './logic/login';
+import rooms from './logic/rooms';
 
 export default (io) => {
   login(io.of('/login'));
