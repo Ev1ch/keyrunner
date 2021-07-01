@@ -10,7 +10,7 @@ import {
   setNextChar,
   setPrintedText,
 } from '../../dom/game/text.mjs';
-import { setTimer } from '../../dom/game/timer.mjs';
+import { setTimer, setTimerText } from '../../dom/game/timer.mjs';
 import { getText } from '../../helpers/api/api.mjs';
 import { hideBlock, showBlock } from '../../helpers/dom/dom.mjs';
 
@@ -112,6 +112,7 @@ roomsSocket.on('UPDATE_TIMER', (seconds) => {
 });
 
 roomsSocket.on('START_GAME', () => {
+  setTimerText('Game:');
   setText(text);
   showBlock(textBlock);
   startGame(text);
@@ -124,7 +125,8 @@ roomsSocket.on('END_GAME', (winners) => {
   hideBlock(textBlock);
   clearText();
   hideBlock(timerBlock);
-  setTimer('');
+  setTimerText('Pause:');
+  setTimer('Game not started');
   playerStatus = 0;
   readyButton.innerText = 'Ready';
 });

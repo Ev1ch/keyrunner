@@ -1,23 +1,24 @@
-#players {
+#members {
   width: 30%;
   flex-direction: column;
   gap: var(--gutter);
 }
 
-.player {
+.member {
   padding: 10px;
   border: 1px solid var(--main-button-border-color);
 }
 
-.player__progress-bar {
+.member__progress-bar {
   width: 100%;
 }
 
-.player__progress-bar.finished {
-  background: greenyellow;
+.member__progress-bar.finished {
+  border-radius: 5px;
+  background: green;
 }
 
-.player__status {
+.member__status {
   margin-left: 10px;
   vertical-align: middle;
   display: inline-block;

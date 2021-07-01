@@ -12,12 +12,13 @@ export function showModal(winners) {
 
   modalContentBlock.appendChild(modalCloseBlock);
   winners.forEach((winner, index) => {
-    const player = createBlock('p', {
+    const member = createBlock('p', {
       id: `place-${index + 1}`,
-      text: `#${index + 1} ${winner.name}`,
+      class: ['place'],
+      text: `Place: #${index + 1}, user: ${winner.name}`,
     });
 
-    modalContentBlock.appendChild(player);
+    modalContentBlock.appendChild(member);
   });
   modalBlock.appendChild(modalContentBlock);
   document.body.appendChild(modalBlock);

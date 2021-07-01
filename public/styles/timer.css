@@ -1,0 +1,12 @@
+#timer {
+  display: inline-block;
+  margin: var(--gutter) 0;
+  border-radius: 5px;
+  padding: 5px 15px;
+  border: 1px solid var(--main-button-border-color);
+  background-color: var(--main-button-background-color);
+}
+
+#timer__text {
+  font-style: italic;
+}

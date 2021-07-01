@@ -6,4 +6,6 @@
 @import url('./game-field.css');
 @import url('./text-container.css');
 @import url('./control-panel.css');
+@import url('./buttons.css');
+@import url('./timer.css');
 @import url('./modal.css');

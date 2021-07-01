@@ -2,7 +2,7 @@ import { createBlock } from '../../../helpers/dom/dom.mjs';
 
 export function memberTemplate(user, isYou) {
   const memberBlock = createBlock('div', {
-    class: ['player'],
+    class: ['member'],
     attributes: {
       'data-name': user.name,
     },
@@ -10,7 +10,7 @@ export function memberTemplate(user, isYou) {
 
   const progressBar = createBlock('progress', {
     class: [
-      'player__progress-bar',
+      'member__progress-bar',
       'user-progress',
       user.name,
       user.progress == 100 ? 'finished' : 'not-finished',
@@ -22,13 +22,13 @@ export function memberTemplate(user, isYou) {
   });
 
   const memberName = createBlock('span', {
-    class: ['player__name'],
+    class: ['member__name'],
     text: `${user.name} ${isYou ? '(you)' : ''}`,
   });
 
   const memberStatus = createBlock('div', {
     class: [
-      'player__status',
+      'member__status',
       user.status == 1 ? 'ready-status-green' : 'ready-status-red',
     ],
   });

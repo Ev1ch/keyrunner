@@ -15,4 +15,13 @@
 }
 
 #quit-results-btn {
+  padding: 5px;
+  border-radius: 2px;
+  border: 1px solid red;
+  font: 700 20px sans-serif;
+  color: red;
+}
+
+.place {
+  margin: 10px 0;
 }
