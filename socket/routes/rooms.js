@@ -108,29 +108,25 @@ const setRoomStatus = (roomname, status) => {
 };
 
 const getTimer = (seconds, callback) => {
-  const timer = {
-    timeouts: [],
+  return {
     start() {
       return new Promise((resolve) => {
         let timeLeft = seconds;
 
-        for (let i = 0; i <= seconds; i++) {
-          this.timeouts.push(
-            setTimeout(() => {
-              callback(timeLeft - i);
-            }, i * 1000),
-          );
-        }
+        const timer = setInterval(() => {
+          callback(timeLeft--, () => {
+            clearInterval(timer);
+            resolve();
+          });
+        }, 1000);
 
-        this.timeouts.push(setTimeout(resolve, seconds * 1000));
+        setTimeout(() => {
+          clearInterval(timer);
+          resolve();
+        }, (seconds + 1) * 1000);
       });
     },
-    stop() {
-      this.timeouts.forEach((timeout) => clearTimeout(timeout));
-    },
   };
-
-  return timer;
 };
 
 export default (io) => {
@@ -138,8 +134,12 @@ export default (io) => {
     const username = socket.handshake.query.username;
     let joinedRoomName;
 
-    const timerUpdater = (seconds) => {
+    const timerUpdater = (seconds, stopper) => {
       io.to(joinedRoomName).emit('UPDATE_TIMER', seconds);
+
+      if (hasRoomFinished(joinedRoomName)) {
+        stopper();
+      }
     };
 
     socket.emit('UPDATE_ROOMS', getAvailableRooms());
@@ -220,14 +220,6 @@ export default (io) => {
       setUserProgress(username, joinedRoomName, progress);
       setUserTime(username, joinedRoomName, new Date().getTime());
       io.to(joinedRoomName).emit('UPDATE_ROOM', getRoom(joinedRoomName));
-
-      if (hasRoomFinished(joinedRoomName)) {
-        io.to(joinedRoomName).emit('END_GAME', getWinnersList(joinedRoomName));
-        resetRoom(joinedRoomName);
-        io.to(joinedRoomName).emit('UPDATE_ROOM', getRoom(joinedRoomName));
-        io.emit('UPDATE_ROOMS', getAvailableRooms());
-        gameTimer.stop();
-      }
     });
 
     socket.on('disconnect', () => {
@@ -235,21 +227,6 @@ export default (io) => {
         leftRoom(username, joinedRoomName);
 
         io.to(joinedRoomName).emit('UPDATE_ROOM', getRoom(joinedRoomName));
-
-        if (
-          (getRoom(joinedRoomName).members.length == 1 &&
-            getRoom(joinedRoomName).status == 1) ||
-          hasRoomFinished(joinedRoomName)
-        ) {
-          io.to(joinedRoomName).emit(
-            'END_GAME',
-            getWinnersList(joinedRoomName),
-          );
-
-          resetRoom(joinedRoomName);
-
-          io.to(joinedRoomName).emit('UPDATE_ROOM', getRoom(joinedRoomName));
-        }
       }
     });
   });

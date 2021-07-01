@@ -172,10 +172,7 @@ const startGame = (text) => {
       roomsSocket.emit('UPDATE_PROGRESS', progress);
 
       if (progress == 100) {
-        const progressBar = document.removeEventListener(
-          'keypress',
-          keyUpHandler,
-        );
+        document.removeEventListener('keypress', keyUpHandler);
       }
     }
   };
@@ -190,6 +187,7 @@ roomsSocket.on('END_GAME', (winners) => {
   hideBlock(textBlock);
   clearText();
   hideBlock(timerBlock);
+  setTimer('');
   playerStatus = 0;
   readyButton.innerText = 'Ready';
 });
