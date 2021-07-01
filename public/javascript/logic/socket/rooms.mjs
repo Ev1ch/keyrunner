@@ -32,7 +32,14 @@ const textBlock = document.getElementById('text-container');
 
 function addRoomHandler() {
   const roomName = prompt('Enter room name:');
-  roomsSocket.emit('CREATE_ROOM', roomName);
+
+  if (roomName != null) {
+    if (roomName.trim().length != 0) {
+      roomsSocket.emit('CREATE_ROOM', roomName);
+    } else {
+      alert('Wrong room name');
+    }
+  }
 }
 
 function leftRoomHandler() {
