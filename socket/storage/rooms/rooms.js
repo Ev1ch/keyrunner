@@ -17,6 +17,13 @@ export const Rooms = {
     this.rooms.push(new Room(roomname));
   },
 
+  removeRoom(roomname) {
+    const roomIndex = this.rooms.findIndex(
+      (room) => room.getName() == roomname,
+    );
+    this.rooms.splice(roomIndex, 1);
+  },
+
   joinRoom(username, roomname) {
     const room = this.getRoom(roomname);
     room.join(username);

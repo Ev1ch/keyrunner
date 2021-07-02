@@ -46,7 +46,18 @@ export default (io) => {
     socket.on('LEFT_ROOM', () => {
       Rooms.leftRoom(username, joinedRoomName);
 
-      io.to(joinedRoomName).emit('UPDATE_ROOM', Rooms.getRoom(joinedRoomName));
+      const room = Rooms.getRoom(joinedRoomName);
+      const roomMembers = room.getMembers();
+
+      if (roomMembers.length == 0) {
+        Rooms.removeRoom(joinedRoomName);
+      } else {
+        io.to(joinedRoomName).emit(
+          'UPDATE_ROOM',
+          Rooms.getRoom(joinedRoomName),
+        );
+      }
+
       io.emit('UPDATE_ROOMS', Rooms.getAvailableRooms());
     });
 

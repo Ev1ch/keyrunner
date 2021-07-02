@@ -16,6 +16,10 @@ export class Room {
     this.status = status;
   }
 
+  getMembers() {
+    return this.members;
+  }
+
   getMember(username) {
     const foundMember = this.members.find(
       (member) => member.getName() == username,
