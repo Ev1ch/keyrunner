@@ -46,9 +46,9 @@ export const cars = [
   'Mitsubishi',
 ];
 
-export const salutation =
+export const salutPhrase =
   'Hello! My name is Olexander and I am the commentator of your game. Now your have to wait a bit and we will start!';
 
-export const start = 'Here we go!';
+export const startPhrase = 'Here we go!';
 
-export const goodbye = 'It was a cool game. I was really enjoing it.';
+export const goodbyePhrase = 'It was a cool game. I was really enjoing it.';
