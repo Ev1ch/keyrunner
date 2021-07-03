@@ -2,6 +2,7 @@ import * as config from '../config';
 import { getTimer } from '../helpers/timer';
 import { texts } from '../../data';
 import { Rooms } from '../storage/rooms/rooms';
+import { getRandomArrayIndex } from '../helpers/array';
 
 export default (io) => {
   io.on('connection', (socket) => {
@@ -80,12 +81,16 @@ export default (io) => {
       if (Rooms.isRoomReady(joinedRoomName)) {
         io.to(joinedRoomName).emit(
           'START_TIMER',
-          Math.floor(Math.random() * texts.length),
+          getRandomArrayIndex(texts.length),
         );
 
         Rooms.setRoomStatus(joinedRoomName, 1);
 
+        const joinedRoom = Rooms.getRoom(joinedRoomName);
+
         io.emit('UPDATE_ROOMS', Rooms.getAvailableRooms());
+
+        io.to(joinedRoomName).emit('COMMENTATOR_MESSAGE');
 
         await pauseTimer.start();
 
@@ -95,7 +100,7 @@ export default (io) => {
 
         io.to(joinedRoomName).emit(
           'END_GAME',
-          Rooms.getWinnersList(joinedRoomName),
+          Rooms.getRankList(joinedRoomName),
         );
         Rooms.resetRoom(joinedRoomName);
 
