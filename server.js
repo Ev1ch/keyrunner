@@ -5,6 +5,8 @@ import socketHandler from './socket';
 import routes from './routes';
 import { STATIC_PATH, PORT } from './config';
 
+const port = PORT || 3002;
+
 const app = express();
 const httpServer = http.Server(app);
 const io = socketIO(httpServer);
@@ -18,6 +20,6 @@ app.get('*', (req, res) => {
 
 socketHandler(io);
 
-httpServer.listen(PORT, () => {
-  console.log(`Listen server on port ${PORT}`);
+httpServer.listen(port, () => {
+  console.log(`Listen server on port ${port}`);
 });
