@@ -1,6 +1,6 @@
 import * as config from '../config';
 import { getTimer } from '../helpers/timer';
-import { goodbyePhrase, texts } from '../../data';
+import { texts } from '../../data';
 import { Rooms } from '../storage/rooms/rooms';
 import { getRandomArrayIndex } from '../helpers/array';
 import { getCurrentTime } from '../helpers/time';
