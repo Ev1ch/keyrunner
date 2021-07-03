@@ -17,5 +17,3 @@ loginSocket.on('USER_EXISTS', () => {
   sessionStorage.removeItem('username');
   window.location.replace('/login');
 });
-
-// export * from './login';

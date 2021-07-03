@@ -100,7 +100,6 @@ roomsSocket.on('JOINED_ROOM', (room) => {
 
 roomsSocket.on('UPDATE_ROOM', (room) => {
   clearMembers();
-  console.log(room);
   for (const member of room.members) {
     if (member.name == username) {
       addMember(member, true);
@@ -175,5 +174,3 @@ function startGame(text) {
 
   document.addEventListener('keypress', keyUpHandler);
 }
-
-// export * from './rooms';
