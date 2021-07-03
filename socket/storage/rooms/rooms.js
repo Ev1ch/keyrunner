@@ -60,9 +60,9 @@ export const Rooms = {
     room.reset();
   },
 
-  getWinnersList(roomname) {
+  getRankList(roomname) {
     const room = this.getRoom(roomname);
-    return room.getWinnersList();
+    return room.getRankList();
   },
 
   setMemberProgress(username, roomname, progress) {

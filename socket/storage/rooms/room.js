@@ -59,10 +59,10 @@ export class Room {
     return notFinishedMember ? false : true;
   }
 
-  getWinnersList() {
-    const winners = JSON.parse(JSON.stringify(this.members));
+  getRankList() {
+    const members = JSON.parse(JSON.stringify(this.members));
 
-    winners.sort((a, b) => {
+    members.sort((a, b) => {
       if (a.progress == b.progress) {
         return a.time - b.time;
       } else {
@@ -70,7 +70,7 @@ export class Room {
       }
     });
 
-    return winners;
+    return members;
   }
 
   reset() {
