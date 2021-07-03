@@ -1,0 +1,43 @@
+#commentator {
+  width: 20%;
+  position: relative;
+}
+
+#commentator__image {
+  width: 100%;
+  height: 100%;
+}
+
+#commentator__message {
+  padding: 20px;
+  display: inline-block;
+  position: relative;
+}
+
+#commentator__message {
+  background: #fff;
+  position: absolute;
+  width: 400px;
+  top: -50px;
+  left: -250px;
+}
+
+#commentator__message.fact {
+  border: 1px solid gold;
+}
+
+#commentator__message.joke {
+  border: 1px solid green;
+}
+
+#commentator__message.closeToFinish {
+  border: 1px solid red;
+}
+
+#commentator__message.status {
+  border: 1px solid lightblue;
+}
+
+#commentator__message.finishing {
+  border: 1px solid purple;
+}

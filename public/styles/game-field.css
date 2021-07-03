@@ -1,3 +1,5 @@
 #game-field {
   flex-wrap: wrap;
+  align-items: center;
+  height: 70%;
 }
