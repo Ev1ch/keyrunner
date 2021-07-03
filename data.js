@@ -21,6 +21,18 @@ export const jokes = [
   'The shovel was a ground-breaking invention.',
 ];
 
+export const facts = [
+  "Glaciers and ice sheets hold about 69 percent of the world's freshwater.",
+  'The fastest gust of wind ever recorded on Earth was 253 miles per hour.',
+  'The best place in the world to see rainbows is in Hawaii.',
+  'There are fossilized plants in Greenland under 1.4 km of ice.',
+  'Whale songs can be used to map out the ocean floor.',
+  'New creatures have been found in deep-sea volcanoes.',
+  'Mount Everest is bigger now than the last time it was measured.',
+  'Climate change is causing flowers to change color.',
+  'Dentistry is the oldest profession in the world.',
+];
+
 export const cars = [
   'Mercedes',
   'Toyota',
