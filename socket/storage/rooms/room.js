@@ -84,15 +84,21 @@ export class Room {
   }
 
   getRankList() {
-    const members = JSON.parse(JSON.stringify(this.members));
+    let members = [...this.members];
 
     members.sort((a, b) => {
-      if (a.progress == b.progress) {
-        return a.endTime - b.endTime;
+      if (a.getProgress() == b.getProgress()) {
+        return a.getEndTime() - b.getEndTime();
       } else {
-        return b.progress - a.progress;
+        return b.getProgress() - a.getProgress();
       }
     });
+
+    members = members.map((member) => ({
+      name: member.getName(),
+      time: Math.round((member.getEndTime() - this.startTime) / 1000),
+      progress: member.getProgress(),
+    }));
 
     return members;
   }
