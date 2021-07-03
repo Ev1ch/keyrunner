@@ -5,7 +5,7 @@ export function getTimer(seconds, callback) {
         let timeLeft = seconds;
 
         const timer = setInterval(() => {
-          callback(timeLeft--, () => {
+          callback(timeLeft--)(() => {
             clearInterval(timer);
             resolve();
           });

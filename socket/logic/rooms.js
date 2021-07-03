@@ -14,6 +14,7 @@ import {
   getCloseToFinishPhrase,
   getFinishingPhrase,
 } from '../helpers/messages';
+import { curry } from 'lodash';
 
 export default (io) => {
   io.on('connection', (socket) => {
@@ -22,11 +23,11 @@ export default (io) => {
     let joinedRoomText;
     let joinedRoom;
 
-    function pauseTimerHandler(seconds, stopper) {
+    const pauseTimerHandler = curry((seconds, stopper) => {
       io.to(joinedRoomName).emit('UPDATE_TIMER', seconds);
-    }
+    });
 
-    function gameTimerHandler(seconds, stopper) {
+    const gameTimerHandler = curry((seconds, stopper) => {
       io.to(joinedRoomName).emit('UPDATE_TIMER', seconds);
 
       const delayBeforeStatusMessage = 30;
@@ -41,20 +42,20 @@ export default (io) => {
         seconds % delayBeforeStatusMessage != 0
       ) {
         if (Math.random() < 0.5) {
-          sendMessage(getRandomJoke(), 'joke');
+          sendMessage(getRandomJoke())('joke');
         } else {
-          sendMessage(getRandomFact(), 'fact');
+          sendMessage(getRandomFact())('fact');
         }
       }
 
       if (seconds % delayBeforeStatusMessage == 0 && seconds != 60) {
         sendMessage(getStatusPhrase(joinedRoom), 'status');
       }
-    }
+    });
 
-    function sendMessage(message, type) {
+    const sendMessage = curry((message, type) => {
       io.to(joinedRoomName).emit('COMMENTATOR_MESSAGE', message, type);
-    }
+    });
 
     socket.emit('UPDATE_ROOMS', Rooms.getAvailableRooms());
 
@@ -149,11 +150,7 @@ export default (io) => {
 
         await gameTimer.start();
 
-        io.to(joinedRoomName).emit(
-          'COMMENTATOR_MESSAGE',
-          getGoodbyePhrase(joinedRoom),
-          'goodbye',
-        );
+        sendMessage(getGoodbyePhrase(joinedRoom))('goodbye');
 
         io.to(joinedRoomName).emit('END_GAME');
         joinedRoom.reset();
@@ -177,11 +174,11 @@ export default (io) => {
       if (joinedRoomText.length > 30) {
         if (leftChars < 30 && !hasCloseToFinishNotified) {
           const phrase = getCloseToFinishPhrase(username);
-          sendMessage(phrase, 'closeToFinish');
+          sendMessage(phrase)('closeToFinish');
           hasCloseToFinishNotified = true;
         } else if (leftChars < 10 && !hasFinisingNotified) {
           const phrase = getFinishingPhrase(username);
-          sendMessage(phrase, 'finishing');
+          sendMessage(phrase)('finishing');
           hasFinisingNotified = true;
         }
       }
@@ -189,7 +186,7 @@ export default (io) => {
 
     socket.on('disconnect', () => {
       if (joinedRoomName) {
-        Rooms.leftRoom(username, joinedRoomName);
+        joinedRoom.left(username);
 
         io.to(joinedRoomName).emit('UPDATE_ROOM', joinedRoom);
       }
