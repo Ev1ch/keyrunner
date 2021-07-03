@@ -9,8 +9,8 @@
       href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=swap"
       rel="stylesheet">
     <script src="/socket.io/socket.io.js"></script>
-    <script defer type="module" src="/javascript/logic/socket/rooms.mjs"></script>
     <script defer type="module" src="/javascript/logic/socket/login.mjs"></script>
+    <script defer type="module" src="/javascript/logic/socket/rooms.mjs"></script>
     <title>Game</title>
   </head>
 
@@ -27,10 +27,16 @@
         <div id="game-field" class="flex">
           <div id="members" class="flex">
           </div>
-          <div id="text-container" class="display-none">
+          <div id="text-container">
             <span id="printed-text"></span>
             <span id="next-char"></span>
             <span id="not-printed-text"></span>
+          </div>
+          <div id="commentator">
+            <img src="http://cdn.onlinewebfonts.com/svg/img_530986.png" alt="" id="commentator__image">
+            <div id="commentator__message" class="display-none">
+              <span></span>
+            </div>
           </div>
           <div id="control-panel">
             <button id="ready-btn">Ready</button>
