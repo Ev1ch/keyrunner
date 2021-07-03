@@ -3,16 +3,19 @@ import { getTimer } from '../helpers/timer';
 import { texts } from '../../data';
 import { Rooms } from '../storage/rooms/rooms';
 import { getRandomArrayIndex } from '../helpers/array';
+import { getCurrentTime } from '../helpers/time';
+import { getSalutPhase } from '../helpers/messages';
 
 export default (io) => {
   io.on('connection', (socket) => {
     const username = socket.handshake.query.username;
     let joinedRoomName;
+    let joinedRoom;
 
     function timerUpdater(seconds, stopper) {
       io.to(joinedRoomName).emit('UPDATE_TIMER', seconds);
 
-      if (Rooms.hasRoomFinished(joinedRoomName)) {
+      if (joinedRoom.hasFinished()) {
         stopper();
       }
     }
@@ -28,8 +31,9 @@ export default (io) => {
         Rooms.joinRoom(username, roomname);
         socket.join(roomname);
         joinedRoomName = roomname;
+        joinedRoom = Rooms.getRoom(joinedRoomName);
 
-        socket.emit('JOINED_ROOM', Rooms.getRoom(roomname));
+        socket.emit('JOINED_ROOM', joinedRoom);
         io.emit('UPDATE_ROOMS', Rooms.getAvailableRooms());
       }
     });
@@ -37,34 +41,34 @@ export default (io) => {
     socket.on('JOIN_ROOM', (roomname) => {
       Rooms.joinRoom(username, roomname);
       socket.join(roomname);
-      joinedRoomName = roomname;
 
-      socket.emit('JOINED_ROOM', Rooms.getRoom(roomname));
-      io.to(joinedRoomName).emit('UPDATE_ROOM', Rooms.getRoom(roomname));
+      joinedRoomName = roomname;
+      joinedRoom = Rooms.getRoom(joinedRoomName);
+
+      socket.emit('JOINED_ROOM', joinedRoom);
+      io.to(joinedRoomName).emit('UPDATE_ROOM', joinedRoom);
       io.emit('UPDATE_ROOMS', Rooms.getAvailableRooms());
     });
 
     socket.on('LEFT_ROOM', () => {
-      Rooms.leftRoom(username, joinedRoomName);
-
-      const room = Rooms.getRoom(joinedRoomName);
-      const roomMembers = room.getMembers();
+      joinedRoom.left(username);
+      const roomMembers = joinedRoom.getMembers();
 
       if (roomMembers.length == 0) {
         Rooms.removeRoom(joinedRoomName);
       } else {
-        io.to(joinedRoomName).emit(
-          'UPDATE_ROOM',
-          Rooms.getRoom(joinedRoomName),
-        );
+        io.to(joinedRoomName).emit('UPDATE_ROOM', joinedRoom);
       }
+
+      joinedRoomName = '';
+      joinedRoom = null;
 
       io.emit('UPDATE_ROOMS', Rooms.getAvailableRooms());
     });
 
     socket.on('NOT_READY', () => {
-      Rooms.setMemberStatus(username, joinedRoomName, 0);
-      io.to(joinedRoomName).emit('UPDATE_ROOM', Rooms.getRoom(joinedRoomName));
+      joinedRoom.setMemberStatus(username, 0);
+      io.to(joinedRoomName).emit('UPDATE_ROOM', joinedRoom);
     });
 
     const pauseTimer = getTimer(
@@ -75,57 +79,47 @@ export default (io) => {
     const gameTimer = getTimer(config.SECONDS_FOR_GAME, timerUpdater);
 
     socket.on('READY', async () => {
-      Rooms.setMemberStatus(username, joinedRoomName, 1);
-      io.to(joinedRoomName).emit('UPDATE_ROOM', Rooms.getRoom(joinedRoomName));
+      joinedRoom.setMemberStatus(username, 1);
+      io.to(joinedRoomName).emit('UPDATE_ROOM', joinedRoom);
 
-      if (Rooms.isRoomReady(joinedRoomName)) {
+      if (joinedRoom.isReady()) {
         io.to(joinedRoomName).emit(
           'START_TIMER',
           getRandomArrayIndex(texts.length),
         );
 
-        Rooms.setRoomStatus(joinedRoomName, 1);
-
-        const joinedRoom = Rooms.getRoom(joinedRoomName);
+        joinedRoom.setStatus(1);
 
         io.emit('UPDATE_ROOMS', Rooms.getAvailableRooms());
-
-        io.to(joinedRoomName).emit('COMMENTATOR_MESSAGE');
 
         await pauseTimer.start();
 
         io.to(joinedRoomName).emit('START_GAME');
 
+        joinedRoom.setStartTime(getCurrentTime());
+
         await gameTimer.start();
 
-        io.to(joinedRoomName).emit(
-          'END_GAME',
-          Rooms.getRankList(joinedRoomName),
-        );
-        Rooms.resetRoom(joinedRoomName);
+        io.to(joinedRoomName).emit('END_GAME', joinedRoom.getRankList());
+        joinedRoom.reset();
 
-        io.to(joinedRoomName).emit(
-          'UPDATE_ROOM',
-          Rooms.getRoom(joinedRoomName),
-        );
+        io.to(joinedRoomName).emit('UPDATE_ROOM', joinedRoom);
+
         io.emit('UPDATE_ROOMS', Rooms.getAvailableRooms());
       }
     });
 
     socket.on('UPDATE_PROGRESS', (progress) => {
-      Rooms.setMemberProgress(username, joinedRoomName, progress);
-      Rooms.setMemberTime(username, joinedRoomName, new Date().getTime());
-      io.to(joinedRoomName).emit('UPDATE_ROOM', Rooms.getRoom(joinedRoomName));
+      joinedRoom.setMemberProgress(username, progress);
+      joinedRoom.setMemberTime(username, getCurrentTime());
+      io.to(joinedRoomName).emit('UPDATE_ROOM', joinedRoom);
     });
 
     socket.on('disconnect', () => {
       if (joinedRoomName) {
         Rooms.leftRoom(username, joinedRoomName);
 
-        io.to(joinedRoomName).emit(
-          'UPDATE_ROOM',
-          Rooms.getRoom(joinedRoomName),
-        );
+        io.to(joinedRoomName).emit('UPDATE_ROOM', joinedRoom);
       }
     });
   });

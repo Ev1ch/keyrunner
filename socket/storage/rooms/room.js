@@ -5,7 +5,16 @@ export class Room {
   constructor(roomname) {
     this.name = roomname;
     this.status = 0;
+    this.startTime = 0;
     this.members = [];
+  }
+
+  getStartTime() {
+    return this.startTime;
+  }
+
+  setStartTime(startTime) {
+    this.startTime = startTime;
   }
 
   getName() {
@@ -18,6 +27,21 @@ export class Room {
 
   getMembers() {
     return this.members;
+  }
+
+  setMemberStatus(username, status) {
+    const member = this.members.find((member) => member.getName() == username);
+    member.setStatus(status);
+  }
+
+  setMemberProgress(username, progress) {
+    const member = this.members.find((member) => member.getName() == username);
+    member.setProgress(progress);
+  }
+
+  setMemberTime(username, time) {
+    const member = this.members.find((member) => member.getName() == username);
+    member.setEndTime(time);
   }
 
   getMember(username) {
@@ -33,7 +57,7 @@ export class Room {
 
   left(username) {
     const memberIndex = this.members.findIndex(
-      (member) => member.name == username,
+      (member) => member.getName() == username,
     );
     this.members.splice(memberIndex, 1);
   }
@@ -54,7 +78,7 @@ export class Room {
 
   hasFinished() {
     const notFinishedMember = this.members.find(
-      (member) => member.progress != 100,
+      (member) => member.getProgress() != 100,
     );
     return notFinishedMember ? false : true;
   }
@@ -64,7 +88,7 @@ export class Room {
 
     members.sort((a, b) => {
       if (a.progress == b.progress) {
-        return a.time - b.time;
+        return a.endTime - b.endTime;
       } else {
         return b.progress - a.progress;
       }
@@ -77,7 +101,9 @@ export class Room {
     this.members.forEach((member) => {
       member.setStatus(0);
       member.setProgress(0);
+      member.resetEndTime();
     });
     this.status = 0;
+    this.startTime = 0;
   }
 }

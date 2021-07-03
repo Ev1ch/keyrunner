@@ -3,7 +3,7 @@ export class Member {
     this.name = username;
     this.progress = 0;
     this.status = 0;
-    this.time = 0;
+    this.endTime = Infinity;
   }
 
   getName() {
@@ -26,11 +26,15 @@ export class Member {
     return this.status;
   }
 
-  setTime(time) {
-    this.time = time;
+  setEndTime(endTime) {
+    this.endTime = endTime;
   }
 
-  getTime() {
-    return this.time;
+  resetEndTime(endTime) {
+    this.endTime = Infinity;
+  }
+
+  getEndTime() {
+    return this.endTime;
   }
 }
