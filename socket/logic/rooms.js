@@ -1,23 +1,59 @@
 import * as config from '../config';
 import { getTimer } from '../helpers/timer';
-import { texts } from '../../data';
+import { goodbyePhrase, texts } from '../../data';
 import { Rooms } from '../storage/rooms/rooms';
 import { getRandomArrayIndex } from '../helpers/array';
 import { getCurrentTime } from '../helpers/time';
-import { getSalutPhase } from '../helpers/messages';
+import {
+  getSalutPhase,
+  getStartPhrase,
+  getRandomJoke,
+  getRandomFact,
+  getGoodbyePhrase,
+  getStatusPhrase,
+  getCloseToFinishPhrase,
+  getFinishingPhrase,
+} from '../helpers/messages';
 
 export default (io) => {
   io.on('connection', (socket) => {
     const username = socket.handshake.query.username;
     let joinedRoomName;
+    let joinedRoomText;
     let joinedRoom;
 
-    function timerUpdater(seconds, stopper) {
+    function pauseTimerHandler(seconds, stopper) {
       io.to(joinedRoomName).emit('UPDATE_TIMER', seconds);
+    }
+
+    function gameTimerHandler(seconds, stopper) {
+      io.to(joinedRoomName).emit('UPDATE_TIMER', seconds);
+
+      const delayBeforeStatusMessage = 30;
+      const delayBeforeRandomMessage = 10;
 
       if (joinedRoom.hasFinished()) {
         stopper();
       }
+
+      if (
+        seconds % delayBeforeRandomMessage == 0 &&
+        seconds % delayBeforeStatusMessage != 0
+      ) {
+        if (Math.random() < 0.5) {
+          sendMessage(getRandomJoke(), 'joke');
+        } else {
+          sendMessage(getRandomFact(), 'fact');
+        }
+      }
+
+      if (seconds % delayBeforeStatusMessage == 0 && seconds != 60) {
+        sendMessage(getStatusPhrase(joinedRoom), 'status');
+      }
+    }
+
+    function sendMessage(message, type) {
+      io.to(joinedRoomName).emit('COMMENTATOR_MESSAGE', message, type);
     }
 
     socket.emit('UPDATE_ROOMS', Rooms.getAvailableRooms());
@@ -61,6 +97,7 @@ export default (io) => {
       }
 
       joinedRoomName = '';
+      joinedRoomText = '';
       joinedRoom = null;
 
       io.emit('UPDATE_ROOMS', Rooms.getAvailableRooms());
@@ -73,35 +110,55 @@ export default (io) => {
 
     const pauseTimer = getTimer(
       config.SECONDS_TIMER_BEFORE_START_GAME,
-      timerUpdater,
+      pauseTimerHandler,
     );
 
-    const gameTimer = getTimer(config.SECONDS_FOR_GAME, timerUpdater);
+    const gameTimer = getTimer(config.SECONDS_FOR_GAME, gameTimerHandler);
 
     socket.on('READY', async () => {
       joinedRoom.setMemberStatus(username, 1);
       io.to(joinedRoomName).emit('UPDATE_ROOM', joinedRoom);
 
+      const textId = getRandomArrayIndex(texts.length);
+      joinedRoomText = texts[textId];
+
       if (joinedRoom.isReady()) {
-        io.to(joinedRoomName).emit(
-          'START_TIMER',
-          getRandomArrayIndex(texts.length),
-        );
+        io.to(joinedRoomName).emit('START_TIMER', textId);
 
         joinedRoom.setStatus(1);
 
         io.emit('UPDATE_ROOMS', Rooms.getAvailableRooms());
 
+        io.to(joinedRoomName).emit(
+          'COMMENTATOR_MESSAGE',
+          getSalutPhase(joinedRoom.getMembers()),
+          'salut',
+        );
+
         await pauseTimer.start();
 
         io.to(joinedRoomName).emit('START_GAME');
+
+        io.to(joinedRoomName).emit(
+          'COMMENTATOR_MESSAGE',
+          getStartPhrase(),
+          'start',
+        );
 
         joinedRoom.setStartTime(getCurrentTime());
 
         await gameTimer.start();
 
-        io.to(joinedRoomName).emit('END_GAME', joinedRoom.getRankList());
+        io.to(joinedRoomName).emit(
+          'COMMENTATOR_MESSAGE',
+          getGoodbyePhrase(joinedRoom),
+          'goodbye',
+        );
+
+        io.to(joinedRoomName).emit('END_GAME');
         joinedRoom.reset();
+
+        joinedRoomText = '';
 
         io.to(joinedRoomName).emit('UPDATE_ROOM', joinedRoom);
 
@@ -109,10 +166,25 @@ export default (io) => {
       }
     });
 
-    socket.on('UPDATE_PROGRESS', (progress) => {
+    let hasCloseToFinishNotified = false;
+    let hasFinisingNotified = false;
+
+    socket.on('UPDATE_PROGRESS', (progress, leftChars) => {
       joinedRoom.setMemberProgress(username, progress);
       joinedRoom.setMemberTime(username, getCurrentTime());
       io.to(joinedRoomName).emit('UPDATE_ROOM', joinedRoom);
+
+      if (joinedRoomText.length > 30) {
+        if (leftChars < 30 && !hasCloseToFinishNotified) {
+          const phrase = getCloseToFinishPhrase(username);
+          sendMessage(phrase, 'closeToFinish');
+          hasCloseToFinishNotified = true;
+        } else if (leftChars < 10 && !hasFinisingNotified) {
+          const phrase = getFinishingPhrase(username);
+          sendMessage(phrase, 'finishing');
+          hasFinisingNotified = true;
+        }
+      }
     });
 
     socket.on('disconnect', () => {
