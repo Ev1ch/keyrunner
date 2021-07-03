@@ -2,7 +2,6 @@ import { clearRooms, addRoom } from '../../dom/rooms/rooms.mjs';
 import { showRoomsPage, hideRoomsPage } from '../../dom/rooms/roomsPage.mjs';
 import { clearMembers, addMember } from '../../dom/game/members/members.mjs';
 import { showGamePage, hideGamePage } from '../../dom/game/gamePage.mjs';
-import { showModal } from '../../dom/game/modal.mjs';
 import {
   setText,
   clearText,
@@ -13,6 +12,7 @@ import {
 import { setTimer, setTimerText } from '../../dom/game/timer.mjs';
 import { getText } from '../../helpers/api/api.mjs';
 import { hideBlock, showBlock } from '../../helpers/dom/dom.mjs';
+import { CommentatorFacade } from '../../dom/game/commentator.mjs';
 
 const username = sessionStorage.getItem('username');
 const credentials = {
@@ -29,6 +29,7 @@ const leftRoomButton = document.getElementById('quit-room-btn');
 const readyButton = document.getElementById('ready-btn');
 const timerBlock = document.getElementById('timer');
 const textBlock = document.getElementById('text-container');
+const commentator = new CommentatorFacade();
 
 function addRoomHandler() {
   const roomName = prompt('Enter room name:');
@@ -99,11 +100,12 @@ roomsSocket.on('JOINED_ROOM', (room) => {
 
 roomsSocket.on('UPDATE_ROOM', (room) => {
   clearMembers();
-  for (const player of room.members) {
-    if (player.name == username) {
-      addMember(player, true);
+  console.log(room);
+  for (const member of room.members) {
+    if (member.name == username) {
+      addMember(member, true);
     } else {
-      addMember(player, false);
+      addMember(member, false);
     }
   }
 });
@@ -125,11 +127,13 @@ roomsSocket.on('START_GAME', () => {
   startGame(text);
 });
 
+roomsSocket.on('COMMENTATOR_MESSAGE', (message, type) => {
+  commentator.showMessage(message, type);
+});
+
 roomsSocket.on('END_GAME', (winners) => {
-  showModal(winners);
   showBlock(readyButton);
   showBlock(leftRoomButton);
-  hideBlock(textBlock);
   clearText();
   hideBlock(timerBlock);
   setTimerText('Pause:');
@@ -161,7 +165,7 @@ function startGame(text) {
 
       progress = Math.round((currentPosition / textLength) * 100);
 
-      roomsSocket.emit('UPDATE_PROGRESS', progress);
+      roomsSocket.emit('UPDATE_PROGRESS', progress, notPrintedText.length + 1);
 
       if (progress == 100) {
         document.removeEventListener('keypress', keyUpHandler);
