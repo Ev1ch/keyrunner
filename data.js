@@ -20,3 +20,16 @@ export const jokes = [
   'What do you call a fake noodle? An Impasta.',
   'The shovel was a ground-breaking invention.',
 ];
+
+export const cars = [
+  'Mercedes',
+  'Toyota',
+  'Lamborghini',
+  'Porsche',
+  'BMW',
+  'Lada',
+  'Nissan',
+  'Bentley',
+  'Volkswagen',
+  'Mitsubishi',
+];
