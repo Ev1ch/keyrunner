@@ -10,7 +10,7 @@ import {
 
 class MessagesFactory {
   getRandom() {
-    const messages = getAll();
+    const messages = this.getAll();
     const randomIndex = getRandomArrayIndex(messages.length);
     return messages[randomIndex];
   }
@@ -18,31 +18,42 @@ class MessagesFactory {
   getAll() {}
 }
 
-export class Jokes extends MessagesFactory {
+class Jokes extends MessagesFactory {
   getAll() {
     return jokes;
   }
 }
 
-export class Cars extends MessagesFactory {
+class Cars extends MessagesFactory {
   getAll() {
     return cars;
   }
 }
 
-export class Facts extends MessagesFactory {
+class Facts extends MessagesFactory {
   getAll() {
     return facts;
   }
 }
 
+export function getRandomJoke() {
+  const jokes = new Jokes();
+  return `Joke: ${jokes.getRandom()}`;
+}
+
+export function getRandomFact() {
+  const facts = new Facts();
+  return `Fact: ${facts.getRandom()}`;
+}
+
 export function getSalutPhase(members) {
-  const phrase = `${salutPhrase} There are members of our room: ${members.map(
-    (member, index) =>
-      `${member.name} on ${Cars.getRandom()}${
-        index == members.length - 1 ? '' : ','
-      }`,
-  )}`;
+  const cars = new Cars();
+  let phrase = `${salutPhrase} There are members of our room:`;
+  members.map((member, index) => {
+    phrase += ` ${member.name} on ${cars.getRandom()}${
+      index != members.length - 1 ? ',' : ''
+    }`;
+  });
   return phrase;
 }
 
@@ -50,6 +61,38 @@ export function getStartPhrase() {
   return startPhrase;
 }
 
-export function getGoodbyePhrase(rankList) {
-  return goodbyePhrase;
+export function getStatusPhrase(room) {
+  let phrase = 'Current status:';
+  const rankList = room.getRankList();
+
+  for (let i = 0; i < rankList.length; i++) {
+    const member = rankList[i];
+    phrase += ` ${member.name} on ${i + 1} place with progress: ${
+      member.progress
+    }%;`;
+  }
+
+  return phrase;
+}
+
+export function getFinishingPhrase(username) {
+  return `${username} is nearly finishing!`;
+}
+
+export function getCloseToFinishPhrase(username) {
+  return `${username} is close to finish!`;
+}
+
+export function getGoodbyePhrase(room) {
+  let phrase = `${goodbyePhrase} There are the list of winners:`;
+  const rankList = room.getRankList();
+
+  for (let i = 0; i < (rankList.length < 3 ? rankList.length : 3); i++) {
+    const member = rankList[i];
+    phrase += ` ${member.name} on ${i + 1} place${
+      member.progress == 100 ? ` with time: ${member.time} s.` : ''
+    };`;
+  }
+
+  return phrase;
 }
