@@ -1,9 +1,7 @@
-Starter for **HTTP, REST / WS** homework. Binary Studio Academy
-
-## Installation
+# Installation
 
 `yarn install`
 
 `yarn start`
 
-open http://localhost:3002/
+Open http://localhost:3002/
